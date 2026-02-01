@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+</head>
+<body>
+<h1>Admin Dashboard</h1>
+
+<button onclick="window.location.href='add-car.html'">Add New Car</button>
+
+<h2>Car List</h2>
+<table border="1" id="carTable">
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Price</th>
+    <th>Image</th>
+    <th>Actions</th>
+  </tr>
+</table>
+
+<script>
+async function loadCars() {
+  const res = await fetch('/admin/get-cars');
+  const cars = await res.json();
+  const table = document.getElementById('carTable');
+  cars.forEach(car => {
+    const row = table.insertRow();
+    row.innerHTML = `
+      <td>${car.car_id}</td>
+      <td>${car.name}</td>
+      <td>${car.price}</td>
+      <td><img src="${car.image}" width="100"/></td>
+      <td>
+        <button onclick="editCar(${car.car_id})">Edit</button>
+        <button onclick="deleteCar(${car.car_id})">Delete</button>
+      </td>
+    `;
+  });
+}
+
+async function deleteCar(id) {
+  if(confirm('Are you sure?')) {
+    await fetch('/admin/delete-car/' + id, { method: 'DELETE' });
+    location.reload();
+  }
+}
+
+function editCar(id) {
+  window.location.href = `edit-car.html?id=${id}`;
+}
+
+window.onload = loadCars;
+</script>
+</body>
+</html>
